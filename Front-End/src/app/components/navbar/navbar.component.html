@@ -1,0 +1,95 @@
+<nav class="bg-gradient-to-r from-indigo-600 to-purple-600 shadow-md">
+  <div class="container mx-auto px-4 sm:px-6 py-4">
+    <div class="flex justify-between items-center">
+      <div class="text-2xl font-bold text-white">BlogHub</div>
+
+      <!-- Hamburger menu -->
+      <button
+        (click)="toggleMenu()"
+        class="lg:hidden text-white focus:outline-none"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M4 6h16M4 12h16m-7 6h7"
+          ></path>
+        </svg>
+      </button>
+
+      <div class="hidden lg:flex gap-4">
+        <a
+          routerLink="/blogs"
+          class="text-white hover:text-indigo-200 font-semibold transition duration-200"
+          >Blogs</a
+        >
+        <ng-container *ngIf="isLoggedIn$ | async">
+          <a
+            routerLink="/profile"
+            class="text-white hover:text-indigo-200 font-semibold transition duration-200"
+            >Profile</a
+          >
+        </ng-container>
+      </div>
+      <div class="hidden lg:flex items-center space-x-8">
+        <ng-container *ngIf="isLoggedIn$ | async; else loginButton">
+          <a
+            href="javascript:void(0)"
+            (click)="logout()"
+            class="bg-white text-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-100 transition duration-200"
+            >Logout</a
+          >
+        </ng-container>
+        <ng-template #loginButton>
+          <a
+            (click)="login()"
+            class="bg-white text-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-100 transition duration-200 cursor-pointer"
+            >Login</a
+          >
+        </ng-template>
+      </div>
+    </div>
+
+    <div
+      [ngClass]="{ block: isMenuOpen, hidden: !isMenuOpen }"
+      class="lg:hidden mt-4"
+    >
+      <div class="flex flex-col space-y-4">
+        <a
+          routerLink="/blogs"
+          class="text-white hover:text-indigo-200 font-semibold transition duration-200"
+          >Blogs</a
+        >
+        <ng-container *ngIf="isLoggedIn$ | async">
+          <a
+            routerLink="/profile"
+            class="text-white hover:text-indigo-200 font-semibold transition duration-200"
+            >Profile</a
+          >
+        </ng-container>
+        <ng-container *ngIf="isLoggedIn$ | async; else mobileLoginButton">
+          <a
+            href="javascript:void(0)"
+            (click)="logout()"
+            class="bg-white text-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-100 transition duration-200 inline-block"
+            >Logout</a
+          >
+        </ng-container>
+        <ng-template #mobileLoginButton>
+          <a
+            (click)="login()"
+            class="bg-white text-indigo-600 px-4 py-2 rounded-md hover:bg-indigo-100 transition duration-200 cursor-pointer inline-block"
+            >Login</a
+          >
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</nav>

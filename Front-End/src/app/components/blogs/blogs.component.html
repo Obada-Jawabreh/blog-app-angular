@@ -1,0 +1,143 @@
+<div class="bg-gradient-to-br from-purple-100 to-indigo-100 min-h-screen font-sans">
+  <div class="container mx-auto mt-12 p-6">
+    <h2 class="text-3xl font-bold mb-8 text-indigo-800">Blogs</h2>
+
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+      <h3 class="text-2xl font-semibold mb-4 text-indigo-700">Create New Post</h3>
+      <form (ngSubmit)="createPost()" class="space-y-4">
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700">Title:</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            [(ngModel)]="newPost.title"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            required
+          >
+        </div>
+        <div>
+          <label for="content" class="block text-sm font-medium text-gray-700">Content:</label>
+          <textarea
+            id="content"
+            name="content"
+            [(ngModel)]="newPost.content"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          Create Post
+        </button>
+      </form>
+    </div>
+
+    <div *ngFor="let post of posts" class="bg-white rounded-xl shadow-2xl mb-12 overflow-hidden transform hover:scale-102 transition duration-300">
+      <div class="p-8">
+        <div class="flex justify-between items-start mb-4">
+          <h3 class="text-3xl font-bold text-indigo-800">{{ post.title }}</h3>
+          <div class="flex flex-col items-end text-gray-600">
+            <div class="flex items-center mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="text-sm font-medium">{{ post.createdAt | date:'shortTime' }}</span>
+            </div>
+            <div class="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span class="text-sm">{{ post.createdAt | date:'longDate' }}</span>
+            </div>
+          </div>
+        </div>
+        <p class="bg-blue-100 text-blue-800 font-semibold py-2 px-4 rounded-2xl inline-block shadow-md mb-4">
+          By {{ post.author.fullName }}
+        </p>
+        <p class="text-gray-800 mb-6 leading-relaxed">{{ post.content }}</p>
+
+        <div class="flex space-x-4 mb-4">
+          <button (click)="addReaction(post._id, 'like')" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+            Like ({{ getReactionCount(post, 'like') }})
+          </button>
+          <button (click)="addReaction(post._id, 'love')" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+            Love ({{ getReactionCount(post, 'love') }})
+          </button>
+          <button (click)="addReaction(post._id, 'laugh')" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+            Laugh ({{ getReactionCount(post, 'laugh') }})
+          </button>
+        </div>
+
+        <button (click)="toggleComments(post._id)" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+          {{ showComments[post._id] ? 'Hide' : 'Show' }} Comments
+        </button>
+      </div>
+
+      <div *ngIf="showComments[post._id]" class="bg-indigo-50 p-8">
+        <h4 class="text-2xl font-semibold mb-6 text-indigo-800">Comments</h4>
+        <ul *ngIf="comments[post._id] && comments[post._id].length > 0">
+          <li *ngFor="let comment of comments[post._id]" class="mb-6 bg-white p-6 rounded-lg shadow-md">
+            <div class="flex justify-between items-start mb-4">
+              <span class="font-medium text-indigo-700">{{ comment.author.fullName }}</span>
+              <div class="flex items-center text-gray-500 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ comment.createdAt | date:'medium' }}</span>
+              </div>
+            </div>
+            <p class="text-gray-800 mb-4">{{ comment.content }}</p>
+
+            <div *ngIf="comment.replies && comment.replies.length > 0" class="ml-8 mt-4">
+              <h5 class="text-lg font-semibold mb-2 text-indigo-700">Replies</h5>
+              <ul>
+                <li *ngFor="let reply of comment.replies" class="mb-3 bg-gray-50 p-4 rounded-lg">
+                  <div class="flex justify-between items-start mb-2">
+                    <span class="font-medium text-indigo-600">{{ reply.author.fullName }}</span>
+                    <span class="text-gray-500 text-sm">{{ reply.createdAt | date:'short' }}</span>
+                  </div>
+                  <p class="text-gray-700">{{ reply.content }}</p>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mt-4">
+              <textarea
+                [(ngModel)]="newReply[comment._id]"
+                placeholder="Write a reply..."
+                class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                rows="2"
+              ></textarea>
+              <button
+                (click)="addReply(post._id, comment._id)"
+                class="mt-2 bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition duration-300"
+              >
+                Reply
+              </button>
+            </div>
+          </li>
+        </ul>
+        <p *ngIf="!comments[post._id] || comments[post._id].length === 0" class="text-gray-600">No comments yet.</p>
+        <form (ngSubmit)="addComment(post._id)" class="mt-6">
+          <textarea
+            [(ngModel)]="newComment[post._id]"
+            name="newComment"
+            placeholder="Write a comment..."
+            class="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            rows="3"
+          ></textarea>
+          <button
+            type="submit"
+            class="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md flex items-center justify-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+            Post Comment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
